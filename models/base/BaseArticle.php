@@ -2,6 +2,10 @@
 
 namespace app\models\base;
 
+use app\models\Category;
+use app\models\Image;
+use app\models\User;
+
 /**
  * This is the model class for table "article".
  *
@@ -12,6 +16,7 @@ namespace app\models\base;
  * @property string $updated_at
  * @property int $category_id
  * @property int $user_id
+ * @property string $description
  *
  * @property Category $category
  * @property User $user
@@ -36,8 +41,9 @@ class BaseArticle extends \yii\db\ActiveRecord
             [['title', 'text', 'category_id', 'user_id'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['category_id', 'user_id'], 'integer'],
-            [['title'], 'string', 'max' => 60],
-            [['text'], 'string', 'max' => 6000],
+            [['title'], 'string', 'max' => 120],
+            [['text'], 'string', 'max' => 10000],
+            [['description'], 'string', 'max' => 300],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -56,6 +62,7 @@ class BaseArticle extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
             'category_id' => 'Category ID',
             'user_id' => 'User ID',
+            'description' => 'Description',
         ];
     }
 

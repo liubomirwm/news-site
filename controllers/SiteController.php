@@ -2,9 +2,12 @@
 
 namespace app\controllers;
 
-use app\models\ContactForm;
+use app\models\Article;
+use app\models\LoginForm;
 use app\models\LoginForm2;
+use app\models\RegisterForm;
 use app\models\TestModel;
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -62,15 +65,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $model = new TestModel();
-        if (Yii::$app->request->isPost) {
-            $receivedData = Yii::$app->request->post();
-            return $this->render('index', [
-                'receivedData' => $receivedData['TestModel']['text'],
-                'testModel' => $model
-            ]);
-        }
-        return $this->render('index', ['testModel' => $model, 'receivedData' => '']);
+        $lastSixArticles = Article::find()->orderBy(['created_at' => SORT_DESC])->limit(6)->with('category')->all();
+        return $this->render('index', ['model' => $lastSixArticles]);
     }
 
     /**
@@ -80,19 +76,42 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
+        $model = new LoginForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $user = User::findOne(['email' => $model->email]);
+            if ($user && Yii::$app->security->validatePassword($model->password, $user->password)) {
+                Yii::$app->user->login($user);
+                return $this->goBack();
+            }
+
+            $model->password = '';
+            $model->addErrors(['email' => 'Email or password is wrong', 'password' => 'Email or password is wrong']);
+        }
+        return $this->render('login', ['model' => $model]);
+    }
+
+    public function actionRegister()
+    {
+        $model = new RegisterForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $user = new User();
+            $user->name = $model->name;
+            $user->email = $model->email;
+            $user->password = Yii::$app->security->generatePasswordHash($model->password);
+
+            if (!$user->save(false)) {
+                $user->password = '';
+                Yii::$app->session->setFlash('error', 'There was an error while registering. Please try again.');
+                return $this->render('register', ['model' => $model]);
+            }
+
+            $auth = Yii::$app->authManager;
+            $authorRole = $auth->getRole('author');
+            $auth->assign($authorRole, $user->id);
+            Yii::$app->session->setFlash('success', 'You have successfully registered and may now login.');
             return $this->goHome();
         }
-
-        $model = new LoginForm2();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+        return $this->render('register', ['model' => $model]);
     }
 
     /**
@@ -105,33 +124,5 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 }

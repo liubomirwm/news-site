@@ -1,6 +1,7 @@
 <?php
 
 /* @var $this \yii\web\View */
+
 /* @var $content string */
 
 use app\assets\AppAsset;
@@ -35,24 +36,52 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+
+    $currentUserRoles = Yii::$app->authManager->getRolesByUser(Yii::$app->user->id);
+    if (isset($currentUserRoles['admin'])) {
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav'],
+            'items' => [
+                ['label' => 'Manage', 'items' => [
+                    ['label' => 'Manage users', 'url' => ['user/index']],
+                    ['label' => 'Manage articles', 'url' => ['article/index']],
+                    ['label' => 'Manage categories', 'url' => ['category/index']],
+                    ['label' => 'View my profile', 'url' => ['user/view', 'id' => Yii::$app->user->id]],
+                ]],
+
+            ],
+        ]);
+    } else if (isset($currentUserRoles['author'])) {
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav'],
+            'items' => [
+                ['label' => 'Author actions', 'items' => [
+                    ['label' => 'Add a new article', 'url' => ['article/create']],
+                    ['label' => 'View my articles', 'url' => ['article/index']],
+                    ['label' => 'View my profile', 'url' => ['user/view', 'id' => Yii::$app->user->id]],
+                ]],
+
+            ],
+        ]);
+    }
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
+            ['label' => 'Login', 'url' => ['/site/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    'Logout (' . Yii::$app->user->identity->name . ')',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()
                 . '</li>'
-            )
+            ),
+            Yii::$app->user->isGuest ? ['label' => 'Register', 'url' => ['/site/register']] : ''
         ],
     ]);
     NavBar::end();
@@ -69,7 +98,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+        <p class="pull-left">&copy; The local news company <?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>

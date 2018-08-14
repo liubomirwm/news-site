@@ -2,6 +2,8 @@
 
 namespace app\models\base;
 
+use app\models\Article;
+
 /**
  * This is the model class for table "user".
  *
@@ -35,6 +37,7 @@ class BaseUser extends \yii\db\ActiveRecord
             [['password', 'auth_key'], 'string', 'max' => 70],
             [['resume'], 'string', 'max' => 170],
             [['email'], 'unique'],
+            [['email'], 'email']
         ];
     }
 
