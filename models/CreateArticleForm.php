@@ -16,6 +16,7 @@ class CreateArticleForm extends ActiveRecord
     public $title;
     public $text;
     public $description;
+    public $image;
     public $category_id;
 
     public static function tableName()
@@ -30,8 +31,9 @@ class CreateArticleForm extends ActiveRecord
             [['title', 'text', 'category_id'], 'required'],
             [['category_id'], 'integer'],
             [['title'], 'string', 'max' => 120],
-            [['text'], 'string', 'max' => 10000],
+            [['text'], 'string', 'max' => 30000],
             [['description'], 'string', 'max' => 300],
+            [['image'], 'image'],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(),
                 'targetAttribute' => ['category_id' => 'id'], 'message' => "You have selected a non-existing category"],
         ];
@@ -46,5 +48,8 @@ class CreateArticleForm extends ActiveRecord
         ];
     }
 
+    public function upload()
+    {
 
+    }
 }

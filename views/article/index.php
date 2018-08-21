@@ -11,6 +11,18 @@ use yii\widgets\Pjax;
 $this->title = 'Articles';
 $this->params['breadcrumbs'][] = $this->title;
 
+$css = <<<CSS
+table {
+    table-layout: fixed;
+}
+
+table td {
+    max-width: 100%;
+    overflow-wrap: break-word;        
+}
+CSS;
+$this->registerCss($css);
+
 ?>
 <div class="article-index">
 

@@ -18,8 +18,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => 300]) ?>
 
-
     <?= $form->field($model, 'text')->widget(CKEditor::className()) ?>
+
+    <?= $form->field($model, 'image')->fileInput() ?>
 
     <?= $form->field($model, 'category_id')->dropDownList($categoriesDropdownData) ?>
 

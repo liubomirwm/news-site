@@ -18,7 +18,8 @@ use yii\widgets\LinkPager;
 
 <?php
 $css = <<<CSS
-#article-section {overflow-wrap: break-word; width: 100%;}
+#article-section {overflow-wrap: break-word;}
+.news-thumbnail-image {width: 200px; height: 112px; object-fit: fill; margin-top: 20px; margin-bottom: 10px;}
 CSS;
 $this->registerCss($css);
 ?>
@@ -27,7 +28,19 @@ $this->registerCss($css);
 
 <?php foreach ($articles as $article): ?>
     <div class="row">
-        <div id="article-section">
+        <div class="col-md-3">
+            <?php
+            if (!empty($article->images)) {
+                $image = $article->images[0];
+                $path = "/news-site/web/images/" . $image->id . "." . $image->extension;
+                echo "<img src='$path' class='news-thumbnail-image'>";
+            } else {
+                $path = "/news-site/web/images/news-default.jpeg";
+                echo "<img src='$path' class='news-thumbnail-image'>";
+            }
+            ?>
+        </div>
+        <div class="col-md-9 article-section">
             <h2><?= $article->title ?></h2>
             <p><?= $article->description ?></p>
             <p><?= Html::a('Read more...', ['article/read-article', 'id' => $article->id], ['class' => 'btn btn-default']) ?>

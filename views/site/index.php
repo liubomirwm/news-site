@@ -11,8 +11,12 @@ $this->title = 'Home | News site';
 
 <?php
 $css = <<<CSS
-h2, h3, h5, p {overflow-wrap: break-word; text-overflow: ellipsis;}
-.news-article-preview {height: 250px;}
+h1, h2, h3, h5, p {overflow-wrap: break-word; text-overflow: ellipsis; text-align: center;}
+h3 {height: 22.31%;}
+h5 {height: 4.34%;}
+p {height: 18.11%;}
+.news-article-preview {height: 355px; text-align: center; margin-top: 20px; overflow: hidden; text-overflow: ellipsis;}
+.news-thumbnail-image {width: 200px; height: 112px; object-fit: cover;}
 CSS;
 $this->registerCss($css);
 ?>
@@ -25,14 +29,26 @@ $this->registerCss($css);
     </div>
 
     <div class="body-content">
-        <h1>Latest</h1>
+        <h1>Last 6 news</h1>
         <div class="row">
             <?php foreach ($model as $article): ?>
                 <div class=" col-md-4 news-article-preview">
+                    <?php if (!empty($article->images)): ?>
+                        <?php
+                        $path = './images/' . $article->images[0]->id . '.'
+                            . $article->images[0]->extension;
+                        echo "<img src='$path' class='news-thumbnail-image'>";
+                        ?>
+                    <?php else: ?>
+                        <?php echo "<img src='./images/news-default.jpeg' class='news-thumbnail-image'>" ?>
+                    <?php endif; ?>
+
                     <h3><?= $article->title ?></h3>
                     <h5><?= Html::a($article->category->name, ['category/show-articles',
                             'categoryId' => $article->category->id]) ?></h5>
-                    <p><?= $article->description ?></p>
+                    <?php if (!empty($article->description)): ?>
+                        <p><?= $article->description ?></p>
+                    <?php endif; ?>
                     <p><?= Html::a('Read more...', ['article/read-article', 'id' => $article->id], ['class' => 'btn btn-default']) ?>
                     </p>
                 </div>

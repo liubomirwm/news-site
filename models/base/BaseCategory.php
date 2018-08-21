@@ -2,6 +2,8 @@
 
 namespace app\models\base;
 
+use app\models\Article;
+
 /**
  * This is the model class for table "category".
  *

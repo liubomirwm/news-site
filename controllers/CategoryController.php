@@ -150,7 +150,7 @@ class CategoryController extends Controller
     public function actionShowArticles($categoryId)
     {
         $query = Article::find()->where(['category_id' => $categoryId])
-            ->orderBy(['created_at' => SORT_DESC])->with('category');
+            ->orderBy(['created_at' => SORT_DESC])->with('category', 'images');
         $count = $query->count();
         $pagination = new Pagination(['totalCount' => $count]);
         $articles = $query->offset($pagination->offset)->limit($pagination->limit)->all();

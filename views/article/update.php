@@ -24,6 +24,8 @@ $this->params['breadcrumbs'][] = 'Update';
         <?= $form->field($model, 'title')->textInput(['autofocus' => true, 'maxlength' => 120]) ?>
         <?= $form->field($model, 'description')->textInput(['maxlength' => 300]) ?>
         <?= $form->field($model, 'text')->widget(CKEditor::className()) ?>
+        <?= $form->field($model, 'image')->fileInput() ?>
+        <?= $form->field($model, 'deleteImage')->checkbox() ?>
         <?= $form->field($model, 'category_id')->dropDownList($categoriesDropdownData) ?>
 
         <div class="form-group">

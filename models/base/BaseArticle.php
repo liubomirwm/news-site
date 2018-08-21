@@ -42,7 +42,7 @@ class BaseArticle extends \yii\db\ActiveRecord
             [['created_at', 'updated_at'], 'safe'],
             [['category_id', 'user_id'], 'integer'],
             [['title'], 'string', 'max' => 120],
-            [['text'], 'string', 'max' => 10000],
+            [['text'], 'string', 'max' => 30000],
             [['description'], 'string', 'max' => 300],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],

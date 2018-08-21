@@ -2,11 +2,14 @@
 
 namespace app\models\base;
 
+use app\models\Article;
+
 /**
  * This is the model class for table "image".
  *
  * @property int $id
  * @property int $article_id
+ * @property string $extension
  *
  * @property Article $article
  */
@@ -26,8 +29,11 @@ class BaseImage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['article_id'], 'required'],
+            [['id', 'article_id', 'extension'], 'required'],
             [['article_id'], 'integer'],
+            [['id'], 'string', 'max' => 33],
+            [['extension'], 'string', 'max' => 6],
+            [['id'], 'unique'],
             [['article_id'], 'exist', 'skipOnError' => true, 'targetClass' => Article::className(), 'targetAttribute' => ['article_id' => 'id']],
         ];
     }
@@ -40,6 +46,7 @@ class BaseImage extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'article_id' => 'Article ID',
+            'extension' => 'Extension',
         ];
     }
 
