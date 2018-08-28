@@ -6,6 +6,7 @@
 
 use app\assets\AppAsset;
 use app\widgets\Alert;
+use app\widgets\CategoriesNav;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
@@ -42,7 +43,7 @@ AppAsset::register($this);
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => [
-                ['label' => 'Manage', 'items' => [
+                ['label' => 'Profile (' . Yii::$app->user->identity->name . ')', 'items' => [
                     ['label' => 'Manage users', 'url' => ['user/index']],
                     ['label' => 'Manage articles', 'url' => ['article/index']],
                     ['label' => 'Manage categories', 'url' => ['category/index']],
@@ -66,9 +67,8 @@ AppAsset::register($this);
     }
 
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
+        'options' => ['class' => 'navbar-nav'],
         'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
             Yii::$app->user->isGuest ? (
             ['label' => 'Login', 'url' => ['/site/login']]
             ) : (
@@ -84,6 +84,9 @@ AppAsset::register($this);
             Yii::$app->user->isGuest ? ['label' => 'Register', 'url' => ['/site/register']] : ''
         ],
     ]);
+
+    echo CategoriesNav::widget();
+
     NavBar::end();
     ?>
 

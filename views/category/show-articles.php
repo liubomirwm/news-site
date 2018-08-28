@@ -24,30 +24,34 @@ CSS;
 $this->registerCss($css);
 ?>
 
-<h1><?= $articles[0]->category->name ?></h1>
+<?php if (!empty($articles)): ?>
+    <h1><?= $articles[0]->category->name ?></h1>
 
-<?php foreach ($articles as $article): ?>
-    <div class="row">
-        <div class="col-md-3">
-            <?php
-            if (!empty($article->images)) {
-                $image = $article->images[0];
-                $path = "/news-site/web/images/" . $image->id . "." . $image->extension;
-                echo "<img src='$path' class='news-thumbnail-image'>";
-            } else {
-                $path = "/news-site/web/images/news-default.jpeg";
-                echo "<img src='$path' class='news-thumbnail-image'>";
-            }
-            ?>
+    <?php foreach ($articles as $article): ?>
+        <div class="row">
+            <div class="col-md-3">
+                <?php
+                if (!empty($article->images)) {
+                    $image = $article->images[0];
+                    $path = "/news-site/web/images/" . $image->id . "." . $image->extension;
+                    echo "<img src='$path' class='news-thumbnail-image'>";
+                } else {
+                    $path = "/news-site/web/images/news-default.jpeg";
+                    echo "<img src='$path' class='news-thumbnail-image'>";
+                }
+                ?>
+            </div>
+            <div class="col-md-9 article-section">
+                <h2><?= $article->title ?></h2>
+                <p><?= $article->description ?></p>
+                <p><?= Html::a('Read more...', ['article/read-article', 'id' => $article->id], ['class' => 'btn btn-default']) ?>
+            </div>
         </div>
-        <div class="col-md-9 article-section">
-            <h2><?= $article->title ?></h2>
-            <p><?= $article->description ?></p>
-            <p><?= Html::a('Read more...', ['article/read-article', 'id' => $article->id], ['class' => 'btn btn-default']) ?>
-        </div>
-    </div>
-<?php
-endforeach;
+    <?php
+    endforeach;
+else:
+    echo '<p>There are no articles in this category yet.</p>';
+endif;
 echo LinkPager::widget([
     'pagination' => $pagination
 ]);
