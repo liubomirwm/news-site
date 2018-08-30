@@ -10,7 +10,6 @@ namespace app\widgets;
 
 
 use app\models\Category;
-use yii\bootstrap\Nav;
 use yii\bootstrap\Widget;
 use yii\helpers\Url;
 
@@ -18,7 +17,7 @@ class CategoriesNav extends Widget
 {
     public function run()
     {
-        $categories = Category::find()->orderBy(['id' => SORT_ASC])/*->limit()*/->asArray()->all();
+        $categories = Category::find()->orderBy(['id' => SORT_ASC])->asArray()->all();
         $items = [];
         foreach ($categories as $category) {
             $items[] = [
@@ -26,12 +25,7 @@ class CategoriesNav extends Widget
                 'url' => Url::to(['category/show-articles', 'categoryId' => $category['id']])
             ];
         }
-        $result = Nav::widget([
-            'options' => ['class' => 'navbar-nav'],
-            'items' => $items
-        ]);
 
-        return $result;
+        return $this->render('categories-nav', ['categories' => $items]);
     }
-
 }

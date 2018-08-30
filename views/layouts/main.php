@@ -7,12 +7,13 @@
 use app\assets\AppAsset;
 use app\widgets\Alert;
 use app\widgets\CategoriesNav;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 
 AppAsset::register($this);
+$this->registerJsFile('@web/javascript/handle-resize-categories-navbar.js',
+    ['depends' => [yii\web\JqueryAsset::className()]])
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -27,73 +28,55 @@ AppAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
-
 <div class="wrap">
-    <?php
-    NavBar::begin([
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
-        ],
-    ]);
-
-    $currentUserRoles = Yii::$app->authManager->getRolesByUser(Yii::$app->user->id);
-    if (isset($currentUserRoles['admin'])) {
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav'],
-            'items' => [
-                ['label' => 'Profile (' . Yii::$app->user->identity->name . ')', 'items' => [
-                    ['label' => 'Manage users', 'url' => ['user/index']],
-                    ['label' => 'Manage articles', 'url' => ['article/index']],
-                    ['label' => 'Manage categories', 'url' => ['category/index']],
-                    ['label' => 'View my profile', 'url' => ['user/view', 'id' => Yii::$app->user->id]],
-                ]],
-
-            ],
-        ]);
-    } else if (isset($currentUserRoles['author'])) {
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav'],
-            'items' => [
-                ['label' => 'Author actions', 'items' => [
-                    ['label' => 'Add a new article', 'url' => ['article/create']],
-                    ['label' => 'View my articles', 'url' => ['article/index']],
-                    ['label' => 'View my profile', 'url' => ['user/view', 'id' => Yii::$app->user->id]],
-                ]],
-
-            ],
-        ]);
-    }
-
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav'],
-        'items' => [
-            Yii::$app->user->isGuest ? (
-            ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->name . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            ),
-            Yii::$app->user->isGuest ? ['label' => 'Register', 'url' => ['/site/register']] : ''
-        ],
-    ]);
-
-    echo CategoriesNav::widget();
-
-    NavBar::end();
-    ?>
+    <nav>
+        <div class="container-fluid">
+            <button id="navbar-toggle-button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggle-icon"></span>
+            </button>
+            <div id="header-logo" class="nav-item pull-left">
+                <a href="<?= Url::to(['/']) ?>">News Site</a>
+            </div>
+            <div id="navbar-dropdown-menu">
+                <?php $currentUserRoles = Yii::$app->authManager->getRolesByUser(Yii::$app->user->id); ?>
+                <div id="user-actions" class="nav-item pull-left">
+                    <?php if (!Yii::$app->user->isGuest): ?>
+                    <p>Manage <span class="caret"></span></p>
+                    <ul id="user-actions-list">
+                        <?php if (isset($currentUserRoles['admin'])): ?>
+                            <li><a href="<?= Url::to(['user/index'], true) ?>">Manage users</a></li>
+                            <li><a href="<?= Url::to(['article/index'], true) ?>">Manage articles</a></li>
+                            <li><a href="<?= Url::to(['category/index'], true) ?>">Manage categories</a></li>
+                            <li><a href="<?= Url::to(['user/index'], true) ?>">View my profile</a></li>
+                        <?php elseif (isset($currentUserRoles['author'])): ?>
+                            <li><a href="<?= Url::to(['article/create'], true) ?>">Add a new article</a></li>
+                            <li><a href="<?= Url::to(['article/index'], true) ?>">View my articles</a></li>
+                            <li><a href="<?= Url::to(['user/view', 'id' => Yii::$app->user->id],
+                                    true) ?>">View my profile</a></li>
+                        <?php endif; ?>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+                <?= CategoriesNav::widget(); ?>
+                <div id="login-logout" class="nav-item pull-right">
+                    <!--                Login/Logout-->
+                    <?php if (!Yii::$app->user->isGuest): ?>
+                        <?= Html::beginForm(['site/logout']); ?>
+                        <?= Html::submitButton("Logout (" . Yii::$app->user->identity->name . ")",
+                            ['class' => 'btn btn-link logout', 'style' => 'text-decoration: none']) ?>
+                        <?= Html::endForm(); ?>
+                    <?php else: ?>
+                        <?= Html::a("Login", ['site/login'], ['style' => 'padding-right: 20px;']) ?>
+                        <?= Html::a("Register", ['site/register']) ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
+        <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],]) ?>
         <?= Alert::widget() ?>
         <?= $content ?>
     </div>
